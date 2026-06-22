@@ -42,3 +42,11 @@ class CommentSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'author' : {'read_only' : True}
         }
+
+    def validate(self, data):
+        pr_data = data['review'].pr         #PrimaryKeyRelatedField - resolved from a PK to an object/model instance
+        max_line_on_pr = len(pr_data.content.splitlines())
+
+        if(data['line_on_pr'] < 1 or data['line_on_pr'] > max_line_on_pr):
+            raise serializers.ValidationError("Invalid line to comment")
+        return data
